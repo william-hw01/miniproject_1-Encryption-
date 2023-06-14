@@ -1,0 +1,90 @@
+from cryptography.fernet import Fernet
+"""key = Fernet.generate_key()
+f = Fernet(key)
+with open('key.key',"wb") as file:
+    file.write(key)    
+"""
+
+with open('key.key',"rb") as file:
+    key = file.read()
+#Master_key = input("Please enter the passwaord")
+f = Fernet(key)
+def add():
+    with open('pw.txt',"a") as file:
+        title = input("Enter the title:\n")
+        pw = input("Enter the password of this title:\n")
+        EncryptedTitle = f.encrypt(title.encode())
+        EncryptedPw = f.encrypt(pw.encode())    
+        print(f.decrypt(EncryptedTitle))
+        try:
+            file.write(EncryptedTitle.decode() + "\n") 
+            file.write(EncryptedPw.decode()+"\n")
+        except:
+            print("seems like there is an error,please input again")
+        else:
+            print("Save successful")
+    
+
+def view():
+    with open('pw.txt',"r") as file:
+        for line in file:            
+            print(f.decrypt(line.rstrip()).decode())
+            print("\n")
+            
+
+def delete():
+    delData = input("which title you want to delete:\n")
+    lock = 0
+    datas = list()
+    deleted = 0
+    with open('pw.txt',"r") as file:
+        datas = file.readlines()
+    #print(datas)
+    #for data in datas:
+        #print(f.decrypt(data.encode()).decode())
+    
+    with open('pw.txt',"w") as file:           
+        for data in datas:
+            if(f.decrypt(data.encode()).decode() == delData):
+                lock = 1
+                deleted = 1
+            else:
+                if(lock == 0):
+                    file.write(data) 
+                if(lock == 1):
+                    lock = 0
+            #print(f.decrypt(data.rstrip()).decode())
+    if(deleted):
+        print("Data deleted")
+    else:
+        print("No such item in the file")
+    
+    
+    """   
+        data.append(f.decrypt(line.rstrip()).decode())
+        if(data == delData):
+            lock = 1
+        else:
+            if(lock == 0):
+                with open('pw.txt',"w") as file2:
+                    file2.write(f.encrypt(data.encode()).decode() + "\n") 
+            if(lock == 1):
+                lock = 0
+    """
+        
+          
+
+while True:
+    choice = input("Which operation you want to do:add,view,delete or exit\n")
+    match choice:
+        case "add":
+            add()
+        case "view":
+            view()
+        case "delete":
+            delete()
+        case "exit":
+            break
+        case default:
+            print("Invalid operation please input again")
+    
